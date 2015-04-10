@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+
+require 'date'
+
+def comma_numbers(number, delimiter = ',')
+  number.to_s.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1#{delimiter}").reverse
+end
+
+MOTD = <<-EOT
+# Crætor: Sire Nathanæl ∞187 Itti Xiæ Eaoi
+# Cræted: SNET.2015.4.9.19.7.∞
+# Version: Earth Beta v0.0.1
+# Purpose: Show time based on the 800,000 degree in multiple formats (SNET (w/GMT), ACDT, XTIME)
+EOT
+
+print MOTD
+
+TIME = Time.now.freeze
+DATETIME = DateTime.now.freeze
+
+    # DateTime.new(2015,1,1,0,0,0,'+7:30')
+    # => #<DateTime: 2015-01-01T00:00:00+07:30 ((2457023j,59400s,0n),+27000s,2299161j)>
+    # DateTime.new(2015,1,1,0,0,0,'+7:30').strftime('%Q')
+    # => "1420043400000"
+
+    # DateTime.new(1970,1,1,0,0,0,'+0:00')
+    # => #<DateTime: 1970-01-01T00:00:00+00:00 ((2440588j,0s,0n),+0s,2299161j)>
+    # DateTime.new(1970,1,1,0,0,0,'+0:00').strftime('%Q')
+    # => "0"
+    # DateTime.new(1970,1,1,0,0,0,'+7:30').strftime('%Q')
+    # => "-27000000"
+
+UNIX_EPOCH_TO_NOW_MILLI_SECONDS = DateTime.now.strftime('%Q') # Milliseconds since "1970-01-01 00:00:00 UTC"
+UNIX_EPOCH_TO_2015_MILLI_SECONDS = 1420070400000 # DateTime.new(2015).strftime('%Q') // Milliseconds since "#<DateTime: 1970-01-01T00:00:00+07:30 ((2457023j,59400s,0n),+27000s,2299161j)>" to #<DateTime: 2015-01-01T00:00:00+07:30 ((2457023j,59400s,0n),+27000s,2299161j)>
+UNIX_EPOCH_FROM_2015_TO_NOW_MILLI_SECONDS = UNIX_EPOCH_TO_NOW_MILLI_SECONDS.to_i - UNIX_EPOCH_TO_2015_MILLI_SECONDS.to_i # Milliseconds from "2015-01-01 00:00:00 UTC" until Today
+
+    # DateTime.new(-3,4,21,4,12,4.006,'+7:30')
+    # => #<DateTime: -0003-04-21T04:12:04+07:30 ((1720072j,74524s,6000000n),+27000s,2299161j)>
+    # DateTime.new(-3,4,21,4,12,4.006,'+7:30').strftime('%Q')
+    # => "-62252507875994"
+
+CRUCIFIXION_DATETIME = DateTime.new(-3, 4, 21, 4, 12, 4.006, '+7:30') #<DateTime: -0003-04-21T04:12:04+07:30 ((1720072j,74524s,6000000n),+27000s,2299161j)>
+CRUCIFIXION_TO_UNIX_EPOCH_MILLI_SECONDS = 62252507875994
+CRUCIFIXION_TO_2015_MILLI_SECONDS = CRUCIFIXION_TO_UNIX_EPOCH_MILLI_SECONDS + UNIX_EPOCH_TO_2015_MILLI_SECONDS
+CRUCIFIXION_TO_NOW_MILLI_SECONDS = CRUCIFIXION_TO_2015_MILLI_SECONDS + UNIX_EPOCH_FROM_2015_TO_NOW_MILLI_SECONDS
+
+print "TIME:                                        #{TIME.inspect}\n"
+print "DATETIME:                                    #{DATETIME.inspect}\n"
+print "UNIX_EPOCH_TO_2015_MILLI_SECONDS:            #{comma_numbers(UNIX_EPOCH_TO_2015_MILLI_SECONDS)}\n"
+print "UNIX_EPOCH_FROM_2015_TO_NOW_MILLI_SECONDS:   #{comma_numbers(UNIX_EPOCH_FROM_2015_TO_NOW_MILLI_SECONDS)}\n"
+print "CRUCIFIXION_DATETIME:                        #{CRUCIFIXION_DATETIME.inspect}\n"
+print "CRUCIFIXION_TO_UNIX_EPOCH_MILLI_SECONDS:     #{comma_numbers(CRUCIFIXION_TO_UNIX_EPOCH_MILLI_SECONDS)}\n"
+print "CRUCIFIXION_TO_2015_MILLI_SECONDS:           #{comma_numbers(CRUCIFIXION_TO_2015_MILLI_SECONDS)}\n"
+print "CRUCIFIXION_TO_NOW_MILLI_SECONDS:            #{comma_numbers(CRUCIFIXION_TO_NOW_MILLI_SECONDS)}\n"
+
+=begin
+print "Today's UTC date: #{DateTime.now.to_s}\n"
+print "Today's UTC date: #{DateTime.now.strftime('%Q').to_s}\n"
+
+print "Date of JC's death: #{XTIME_START.to_s}\n"
+
+print "Seconds since JC's death based on '1970-01-01 00:00:00 UTC': #{XTIME_START.strftime("%s")}\n"
+print "Seconds since JC's death based on today: #{(CRUCIFIXION_TO_2015_MILLI_SECONDS + DATETIME.strftime('%s').to_i}\n"
+
+print "Milliseconds since JC's death based on '1970-01-01 00:00:00 UTC': #{XTIME_START.strftime("%Q")}\n"
+print "Milliseconds since JC's death based on today: #{(XTIME_START.strftime("%Q").to_i * -1) + DATETIME.strftime('%Q').to_i}\n"
+=end
